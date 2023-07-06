@@ -19,7 +19,6 @@ module.exports = {
         // user bebas mengisi apa saja yang di butuhkan 
         // nanti ada pengondisian apakah data kosong atau nga
         //jika kosong ng aakan di tampilkan di front end
-        //jika tidak kosong logic di front end menentukan
         //jika tidak kosong panggil icon jika kosong icon tidak akan di tampilkan
         const newContact = new contactModel({
             whasapp,
@@ -38,9 +37,22 @@ module.exports = {
         }
     },
     put: async (req, res) => {
-
+        const updated = req.body
+        const id = req.params._id
+        try{
+            const updateContact = await contactModel.findByIdAndUpdate(id,updated,{new:true})
+            response(200,updateContact,'contact berhasil di ubah',res)
+        }catch(err){
+            response(500,err,'internal server error \n gagal mengubah contact',res)
+        }
     },
     delete: async (req, res) => {
-
+        const id = req.params._id
+        try{
+            const deleteContact = await contactModel.findByIdAndDelete(id)
+            response(200,deleteContact,'contact berhasil di hapus',res)
+        }catch(err){
+            response(500,err,'internal server error \n gagal menghapus contact',res)
+        }
     }
 }
