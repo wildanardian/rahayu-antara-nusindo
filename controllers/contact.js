@@ -14,8 +14,7 @@ module.exports = {
         }
     },
     post:async (req, res) => {
-        const {whasapp, facebook, instagram, youtube, twitter, email} = req.body;
-
+        const {whasapp, facebook, instagram, youtube, twitter, email, map} = req.body;
         // user bebas mengisi apa saja yang di butuhkan 
         // nanti ada pengondisian apakah data kosong atau nga
         //jika kosong ng aakan di tampilkan di front end
@@ -27,6 +26,7 @@ module.exports = {
             youtube,
             twitter,
             email,
+            map
         });
         try{
             await newContact.save();
