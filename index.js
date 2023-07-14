@@ -16,10 +16,14 @@ mongoose.connect('mongodb+srv://catalistranproject:catalistranproject123@ranproj
 
 // routes
 const userRouter = require('./routers/user');
+const contactRouter = require('./routers/contact');
+const achivmentRouter = require('./routers/achivment');
 // routes
 
 // use routes
 app.use('/user', userRouter);
+app.use('/contact', contactRouter);
+app.use('/achivment', achivmentRouter);
 // use routes
 
 
