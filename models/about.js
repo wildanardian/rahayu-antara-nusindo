@@ -9,3 +9,4 @@ const abaoutSchema = new Schema({
 const abaout = mongoose.model('abaout', abaoutSchema);
 
 module.exports = abaout;
+
