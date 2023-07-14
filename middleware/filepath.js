@@ -11,3 +11,16 @@ const storage = multer.diskStorage({
         cb(null, digitPertama +'-'+ digitKedua +'-'+ digitKetiga)
     }
 });
+
+const upload = multer({
+    storage: storage,
+    SeleksiFile: (req, file, cb) => {
+        if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg'){
+            cb(null, true)
+        }else{
+            cb(new Error('File harus bertipe png, jpeg, atau jpg'), false)
+        }
+    }
+});
+
+module.exports = upload;
