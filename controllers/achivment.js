@@ -7,7 +7,7 @@ const multer = require('multer');
 module.exports = {
   get: async (req, res) => {
     try {
-      const content = await achivmentModel.find();
+        const content = await achivmentModel.find();
       response(200, content, 'menampilkan semua content', res);
     } catch (err) {
       response(500, err, 'internal server error \n gagal menampilkan achivment', res);
