@@ -8,6 +8,7 @@ const contactSchema = new Schema({
     youtube: { type: String, required: true, title: 'Youtube' },
     twitter: { type: String, required: true, title: 'Twitter' },
     email: { type: String, required: true, title: 'Email' },
+    map: { type: String, required: true, title: 'Map' },
 }, {timestamps: true});
 
 const contact = mongoose.model('contact', contactSchema);
