@@ -13,13 +13,13 @@ module.exports = {
     },
     post: async (req, res) => {
         const {title,image,description} = req.body;
-        const newUser = new userModel({
+        const newEvent = new userModel({
             title,
             image,
             description
         })
         try{
-            await newUser.save();
+            await newEvent.save();
             response(201,newUser,'event berhasil di daftarkan',res)
         }catch(err){
             response(500,err,'internal server error',res)
