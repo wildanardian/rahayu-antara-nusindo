@@ -1,13 +1,29 @@
 const multer = require('multer');
+const express = require('express');
+const app = express();
 
-const storage = multer.diskStorage({
+const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null,'../assets/achivment' );
+        cb(null,'assets');
     },
     filename: (req, file, cb) => {
-        const digitPertama = Math.round(Math.random() * 10);
-        const digitKedua = file.originalname.split('.')[0].length;
-        const digitKetiga = Date.now();
-        cb(null, digitPertama +'-'+ digitKedua +'-'+ digitKetiga)
+        const digitpertama = Date.now();
+        const digitKedua = file.originalname;
+        cb(null,digitpertama+digitKedua)
     }
 });
+
+const fileFilter = (req, file, next) => {
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg') {
+      next(null, true);
+    } else {
+      next(new Error('File harus bertipe png, jpeg, atau jpg'), false);
+    }
+  };
+  
+  const uploadFile = multer({
+    storage: fileStorage,
+    fileFilter: fileFilter,
+  }).single('image');
+  
+  module.exports = uploadFile;

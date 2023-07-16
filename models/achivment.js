@@ -1,12 +1,12 @@
-const moongoose = require('mongoose')
-const {Schema} = moongoose
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const achivmentSchema = new Schema({
-    title: { type: String, required: true, title: 'Title', contentType: 'String'},
-    content: { type: String, required: true, title: 'Content', contentType: 'text' },
-    image: { data: String , required: true, title: 'Image' , contentType: 'String'},
-},{timestamps: true})
+const achievementSchema = new Schema({
+  title: { type: String, required: true },
+  content: { type: String, required: true },
+  image: { type: String, required: true },
+}, { timestamps: true });
 
-const achivment = moongoose.model('achivment', achivmentSchema)
+const Achievement = mongoose.model('Achievement', achievementSchema);
 
-module.exports = achivment
+module.exports = Achievement;
