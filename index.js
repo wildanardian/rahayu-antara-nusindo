@@ -19,6 +19,7 @@ const userRouter = require('./routers/user');
 const eventRouter = require('./routers/user');
 const contactRouter = require('./routers/contact');
 const achivmentRouter = require('./routers/achivment');
+const ofpRouter = require('./routers/ofp');
 // routes
 
 // use routes
@@ -27,6 +28,7 @@ app.use('/user', userRouter);
 app.use('/event', eventRouter);
 app.use('/contact', contactRouter);
 app.use('/achivment', achivmentRouter);
+app.use('/ofp', ofpRouter);
 // use routes
 
 
