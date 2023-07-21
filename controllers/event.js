@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const eventModel = require("../models/event");
 const response = require("../respons/response_valid")
 
+const upload = require('../middleware/filepath');
+const multer = require('multer');
+
 module.exports = {
     get:async (req, res) => {
         try{
@@ -12,28 +15,56 @@ module.exports = {
         }
     },
     post: async (req, res) => {
-        const {title,image,description} = req.body;
-        const newEvent = new userModel({
-            title,
-            image,
-            description
-        })
-        try{
-            await newEvent.save();
-            response(201,newUser,'event berhasil di daftarkan',res)
-        }catch(err){
-            response(500,err,'internal server error',res)
-        }
+      upload(req, res, async (error) => {
+            if(error instanceof multer.MulterError) {
+              response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
+            }else if (error) {
+              response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
+            } else {
+              try {
+                const { title, description } = req.body;
+                const image = req.file.path;
+      
+                const newEvent = new eventModel({
+                  title,
+                  description,
+                  image,
+                });
+                await eventModel.save();
+                response(201, newEvent, 'event berhasil di tambahkan', res);
+              } catch (error) {
+                response(500, error, 'internal server error \n gagal menambahkan event', res);
+              }
+            }
+        });
     },
     put: async (req, res) => {
-        const updated = req.body
-        const id = req.params._id
-        try{
-            const updateEvent = await eventModel.findByIdAndUpdate(id,updated,{new:true})
-            response(200,updateEvent,'Event berhasil di ubah',res)
-        }catch(err){
-            response(500,err,'internal server error \n gagal mengubah Event',res)
+        const id = req.params._id;
+        upload(req, res, async (error) => {
+        if (error instanceof multer.MulterError) {
+          response(500, error, 'internal server error \n gagal menambahkan gambar achivment', res);
+        } else if (error) {
+          response(500, error, 'internal server error \n gagal menambahkan gambar achivment', res);
+        } else {
+          try {
+            const { title, content } = req.body;
+            const image = req.file.path;
+
+            const updatedAchivment = await achivmentModel.findByIdAndUpdate(
+              id,
+              {
+                title,
+                content,
+                image,
+              },
+              { new: true }
+            );
+            response(200, updatedAchivment, 'achivment berhasil diperbarui', res);
+          } catch (error) {
+            response(500, error, 'internal server error \n gagal memperbarui achivment', res);
+          }
         }
+      });
     },
     delete: async (req, res) => {
         const id = req.params._id

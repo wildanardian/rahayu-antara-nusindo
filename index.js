@@ -39,4 +39,3 @@ app.get('/', (req, res) => {
 app.listen(process.env.local_port, () => {
     console.log(`Server dimulai pada server ${process.env.local_port}`);
 });
-  
