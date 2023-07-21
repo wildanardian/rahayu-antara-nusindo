@@ -14,7 +14,6 @@ module.exports = {
         if (!authHeader) {
             response(401,null, 'anda tidak memiliki akses', res)
         }
-
         const tokenHeader = authHeader.split(' ')[1];
 
         jwt.verify(tokenHeader, token, (err, user) => {
