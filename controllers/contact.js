@@ -38,6 +38,7 @@ module.exports = {
         const updated = req.body
         const id = req.params._id
         try{
+            console.log(updated);
             const updateContact = await contactModel.findByIdAndUpdate(id,updated,{new:true})
             response(200,updateContact,'contact berhasil di ubah',res)
         }catch(err){

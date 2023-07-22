@@ -47,15 +47,19 @@ module.exports = {
       } else {
         try {
           const { title, content } = req.body;
-          const image = req.file.path;
+          let update = { title, content };;
+
+          if (req.file) {
+              update = {
+                  title,
+                  content,
+                  image: req.file.path 
+              };
+          } 
 
           const updatedAchivment = await achivmentModel.findByIdAndUpdate(
             id,
-            {
-              title,
-              content,
-              image,
-            },
+            update,
             { new: true }
           );
           response(200, updatedAchivment, 'achivment berhasil diperbarui', res);

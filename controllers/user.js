@@ -27,6 +27,7 @@ module.exports = {
             await newUser.save();
             response(201,newUser,'user berhasil di daftarkan')
         }catch(err){
+            console.log(err.message);
             response(500,err,'internal server error',res)
         }
     },
@@ -49,6 +50,7 @@ module.exports = {
             const token = jwt.sign({id:user._id,jabatan:user.jabatan},secret_key,{expiresIn:'1d'});
             response(200,{token},'login berhasil',res)
         }catch(err){
+            console.log(err.message);
             response(500,err,'internal server error',res)
         }
     },
@@ -87,4 +89,13 @@ module.exports = {
             response(500,err,'internal server error',res)
         }
     },
+    delete: async(req, res) => {
+        try {
+            const id = req.params._id;
+            const result = await userModel.findByIdAndDelete(id);
+            response(200, result, 'user berhasil dihapus', res);
+        }catch(error){
+            response(500, error, 'Internal Server Error \n Gagal menghapus user',res)
+        }
+    }
 }

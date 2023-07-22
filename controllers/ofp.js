@@ -47,20 +47,25 @@ module.exports = {
                 response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
             }else {
                 try {
-                    const {title, description} = req.body;
-                    const image = req.file.path;
-
-                    const updatedOfp = await ofpModel.findbyIdAndUpdate(
-                        id,
-                        {
+                    const { title, description } = req.body;
+                    let update = { title, description };;
+        
+                    if (req.file) {
+                        update = {
                             title,
                             description,
-                            image,
-                        },
+                            image: req.file.path 
+                        };
+                    }
+
+                    const updatedOfp = await ofpModel.findByIdAndUpdate(
+                        id,
+                        update,
                         {new: true}
                     );
                     response(200, updatedOfp, 'Favorite Product berhasil diperbarui', res);
                 } catch (error) {
+                    console.log(error.message);
                     response(500, error, 'Internal Server Error \n Gagal memperbarui favorite product', res);
                 }
             }
@@ -69,10 +74,10 @@ module.exports = {
     delete: async(req, res) => {
         try {
             const id = req.params._id;
-            const result = await ofpModel.findbyIdAndDelete(id);
+            const result = await ofpModel.findByIdAndDelete(id);
             response(200, result, 'Favorite Product berhasil dihapus', res);
         }catch(error){
-            response(500, error, 'Internal Server Error \n Gagal menghapus favorite product')
+            response(500, error, 'Internal Server Error \n Gagal menghapus favorite product',res)
         }
     },
 };
