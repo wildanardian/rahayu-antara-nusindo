@@ -42,9 +42,9 @@ module.exports = {
         const id = req.params._id;
         upload(req, res, async (error) => {
         if (error instanceof multer.MulterError) {
-          response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
+            response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
         } else if (error) {
-          response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
+            response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
         } else {
           try {
             const { title, description } = req.body;
@@ -59,9 +59,9 @@ module.exports = {
             } 
 
             const updatedevent = await eventModel.findByIdAndUpdate(
-              id,
-              update,
-              { new: true }
+                id,
+                update,
+                { new: true }
             );
             response(200, updatedevent, 'event berhasil diperbarui', res);
           } catch (error) {

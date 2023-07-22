@@ -25,7 +25,7 @@ module.exports = {
                 email,
             })
             await newUser.save();
-            response(201,newUser,'user berhasil di daftarkan')
+            response(201,newUser,'user berhasil di daftarkan',res)
         }catch(err){
             console.log(err.message);
             response(500,err,'internal server error',res)
@@ -80,19 +80,19 @@ module.exports = {
         }
     },
     put: async (req, res) => {
-        userId = req.params._id;
+        userId = req.params.id;
         const updatedData = req.body;
         try{
-            await userModel.findByIdAndUpdate(userId,updatedData);
-            response(200,updatedData,'user berhasil di update',res)
+            const result = await userModel.findByIdAndUpdate(userId,updatedData,{new:true});
+            response(200,result,'user berhasil di update',res)
         }catch(err){
             response(500,err,'internal server error',res)
         }
     },
     delete: async(req, res) => {
         try {
-            const id = req.params._id;
-            const result = await userModel.findByIdAndDelete(id);
+            const id = req.params.id;
+            const result = await userModel.findByIdAndRemove(id);
             response(200, result, 'user berhasil dihapus', res);
         }catch(error){
             response(500, error, 'Internal Server Error \n Gagal menghapus user',res)
