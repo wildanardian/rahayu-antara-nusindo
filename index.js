@@ -16,7 +16,7 @@ mongoose.connect('mongodb+srv://catalistranproject:catalistranproject123@ranproj
 
 // routes
 const userRouter = require('./routers/user');
-const eventRouter = require('./routers/user');
+const eventRouter = require('./routers/event');
 const contactRouter = require('./routers/contact');
 const achivmentRouter = require('./routers/achivment');
 const ofpRouter = require('./routers/ofp');
@@ -30,11 +30,6 @@ app.use('/contact', contactRouter);
 app.use('/achivment', achivmentRouter);
 app.use('/ofp', ofpRouter);
 // use routes
-
-
-app.get('/', (req, res) => {
-    res.send('bismillah hirrohman nirrohim');
-});
 
 app.listen(process.env.local_port, () => {
     console.log(`Server dimulai pada server ${process.env.local_port}`);

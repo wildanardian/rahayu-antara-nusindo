@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const Controller = require('../controllers/');
+const Controller = require('../controllers/event');
 
 router.get('/', Controller.get);
 router.post('/', Controller.post);

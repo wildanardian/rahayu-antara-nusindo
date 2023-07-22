@@ -6,6 +6,7 @@ module.exports = {
     get:async (req, res) => {
         try{
             const content = await eventModel.find();
+            console.log("test");
             response(200,content,'menampilkan semua content',res)
         }catch(err){
             response(500,err,'internal server error \n gagal menampilkan event',res)

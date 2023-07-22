@@ -7,6 +7,4 @@ const eventSchema = new Schema({
     description: { type: String, required: true }
 }, {timestamps: true});
 
-const event = mongoose.model('event', eventSchema);
-
-module.exports = event;
+module.exports = mongoose.model('event', eventSchema);;
