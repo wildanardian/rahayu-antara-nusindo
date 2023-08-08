@@ -59,6 +59,7 @@ module.exports = {
             const user = await userModel.find();
             response(200,user,'menampilkan semua user',res)
         }catch(err){
+            console.log(err.message);
             response(500,err,'internal server error',res)
         }
     },
