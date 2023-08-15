@@ -13,16 +13,29 @@ module.exports = {
       response(500, err, 'internal server error \n gagal menampilkan achivment', res);
     }
   },
+  getSingle: async (req, res) => {
+    id = req.params.id
+    try {
+      const content = await achivmentModel.findOne({_id:id});
+      response(200, content, 'menampilkan semua content', res);
+    } catch (err) {
+      response(500, err, 'internal server error \n gagal menampilkan achivment', res);
+    }
+  },
   post: async (req, res) => {
     upload(req, res, async (error) => {
       if (error instanceof multer.MulterError) {
-        response(500, error, 'internal server error \n gagal menambahkan gambar achivment', res);
+        console.log(error.message);
+        response(500, error, 'internal server error \n gagal menambahkan gambar achivment 1`', res);
       } else if (error) {
-        response(500, error, 'internal server error \n gagal menambahkan gambar achivment', res);
+        console.log(error.message);
+        response(500, error, 'internal server error \n gagal menambahkan gambar achivment 2', res);
       } else {
+        console.log(req.file)
         try {
           const { title, content } = req.body;
-          const image = req.file.path;
+          const image = req.file.filename;
+          console.log("ini image",image);
 
           const newAchivment = new achivmentModel({
             title,
@@ -32,6 +45,7 @@ module.exports = {
           await newAchivment.save();
           response(201, newAchivment, 'achivment berhasil di tambahkan', res);
         } catch (error) {
+          console.log("error",error.message,error);
           response(500, error, 'internal server error \n gagal menambahkan achivment', res);
         }
       }
@@ -53,7 +67,7 @@ module.exports = {
               update = {
                 title,
                 content,
-                image: req.file.path 
+                image: req.file.filename 
               };
           } 
 
