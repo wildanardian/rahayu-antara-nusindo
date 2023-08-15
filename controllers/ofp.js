@@ -22,12 +22,12 @@ module.exports = {
                 response(500, error, 'Internal Server Error \n Gagal menambahkan favorite product', res);
             }else {
                 try {
-                    const {title, description} = req.body;
-                    const image = req.file.path;
+                    const {title, content} = req.body;
+                    const image = req.file.filename;
 
                     const newOfp = new ofpModel({
                         title,
-                        description,
+                        content,
                         image,
                     });
                     await newOfp.save();
@@ -47,14 +47,14 @@ module.exports = {
                 response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
             }else {
                 try {
-                    const { title, description } = req.body;
-                    let update = { title, description };;
+                    const { title, content } = req.body;
+                    let update = { title, content };;
         
                     if (req.file) {
                         update = {
                             title,
-                            description,
-                            image: req.file.path 
+                            content,
+                            image: req.file.filename 
                         };
                     }
 
