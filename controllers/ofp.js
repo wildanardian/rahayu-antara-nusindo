@@ -28,7 +28,7 @@ module.exports = {
                     const newOfp = new ofpModel({
                         title,
                         content,
-                        image,
+                        image               
                     });
                     await newOfp.save();
                     response(201, newOfp, 'Favorite Product Berhasil ditambahkan', res);
