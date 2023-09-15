@@ -7,7 +7,7 @@ const path = require('path');
 require('dotenv').config();
 
 app.use(cors())
-app.use('/assets',express.static('assets'));
+app.use('/assets',express.static('assets')); 
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -18,7 +18,7 @@ mongoose.connect('mongodb://ahlilfikri94:futari123@ac-tcscyzb-shard-00-00.dxk3ml
 
 // routes
 const userRouter = require('./routers/user');
-const eventRouter = require('./routers/event');
+const eventRouter = require('./routers/mediaRelease');
 const contactRouter = require('./routers/contact');
 const achivmentRouter = require('./routers/achivment');
 const aboutRouter = require('./routers/about');
@@ -29,7 +29,7 @@ const visiMisiRouter = require('./routers/visiMisi');
 // use routes
 
 app.use('/user', userRouter);
-app.use('/event', eventRouter);
+app.use('/media', eventRouter);
 app.use('/contact', contactRouter);
 app.use('/achievement', achivmentRouter);
 app.use('/about', aboutRouter);
