@@ -13,7 +13,15 @@ module.exports = {
             response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
         }
     },
-
+    getSingle:async (req, res) => {
+        try {
+            const id = req.params._id;
+            const content = await ofpModel.findById(id);
+            response(200,content,'menampilkan ofp', res)
+        }catch(err){
+            response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
+        }
+    },
     post: async(req, res) => {
         upload(req, res, async(error) => {
             if(error instanceof multer.MulterError){
@@ -22,12 +30,13 @@ module.exports = {
                 response(500, error, 'Internal Server Error \n Gagal menambahkan favorite product', res);
             }else {
                 try {
-                    const {title, content} = req.body;
+                    const {title, content,price} = req.body;
                     const image = req.file.filename;
 
                     const newOfp = new ofpModel({
                         title,
                         content,
+                        price,
                         image               
                     });
                     await newOfp.save();
@@ -47,13 +56,14 @@ module.exports = {
                 response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
             }else {
                 try {
-                    const { title, content } = req.body;
+                    const { title, content,price } = req.body;
                     let update = { title, content };;
         
                     if (req.file) {
                         update = {
                             title,
                             content,
+                            price,
                             image: req.file.filename 
                         };
                     }

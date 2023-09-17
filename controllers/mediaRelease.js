@@ -14,6 +14,20 @@ module.exports = {
             response(500,err,'internal server error \n gagal menampilkan event',res)
         }
     },
+    getOne: async (req, res) => {
+        const id = req.params._id;
+        try {
+            const content = await mediaReleaseSchema.findById(id);
+            if (!content) {
+                response(404, null, 'Event tidak ditemukan', res);
+                return;
+            }
+            response(200, content, 'menampilkan event', res);
+        } catch (err) {
+            console.log(err.message);
+            response(500, err, 'internal server error \n gagal menampilkan event', res);
+        }
+    },
     post: async (req, res) => {
         upload(req, res, async (error) => {
           if (error instanceof multer.MulterError) {
