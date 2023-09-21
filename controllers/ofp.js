@@ -22,6 +22,14 @@ module.exports = {
             response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
         }
     },
+    // getSelected:async (req, res) => { // v2 
+    //     try {
+    //         const content = await ofpModel.find({selected: true});
+    //         response(200,content,'menampilkan ofp', res)
+    //     }catch(err){
+    //         response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
+    //     }
+    // },
     post: async(req, res) => {
         upload(req, res, async(error) => {
             if(error instanceof multer.MulterError){
