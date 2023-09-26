@@ -1,57 +1,49 @@
-const mongoose = require("mongoose");
-const contactModel = require("../models/contact");
-const response = require("../respons/response_valid")
+const express = require('express');
+const router = express.Router();
+const Contact = require('../models/contactUs'); // Impor model Contact
+const nodemailer = require('nodemailer');
+
+// Rute untuk menyimpan pesan kontak
 
 module.exports = {
-    get:async (req, res) => {
-        try{
-            const content = await contactModel.find();
-            response(200,content,'menampilkan semua content',res)
-        }catch(err){
-            response(500,err,'internal server error \n gagal menampilkan contact',res)
+    send : async (req, res) => {
+        try {
+            const { firstName, lastName, email, subject, message } = req.body;
+        
+            // Konfigurasi transporter Nodemailer
+            const transporter = nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                user: 'catalistteamproject@gmail.com', // Ganti dengan alamat email Anda
+                pass: 'catalist.654321', // Ganti dengan kata sandi email Anda
+                },
+            });
+    
+            const mailOptions = {
+                from: 'catalistteamproject@gmail.com', // Ganti dengan alamat email Anda
+                to: 'george123hanip@gmail.com', // Ganti dengan alamat email tujuan catalistteamproject@gmail.com
+                subject: subject,
+                text: `
+                Name: ${firstName} ${lastName}
+                Email: ${email}
+                Message: ${message}
+                `,
+            };
+    
+            // Kirim email
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Error sending email' });
+                } else {
+                console.log('Email sent: ' + info.response);
+                res.status(200).json({ message: 'Email sent successfully' });
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error sending email' });
         }
-    },
-    post:async (req, res) => {
-        const {whasapp, facebook, instagram, youtube, twitter, email, map} = req.body;
-        // user bebas mengisi apa saja yang di butuhkan 
-        // pengondisian apakah data kosong atau nga
-        //jika kosong nga akan di tampilkan di front end
-        //jika tidak kosong panggil icon jika kosong icon tidak akan di tampilkan
-        const newContact = new contactModel({
-            whasapp,
-            facebook,
-            instagram,
-            youtube,
-            twitter,
-            email,
-            map
-        });
-        try{
-            await newContact.save();
-            response(201,newContact,'contact berhasil di tambahkan',res)
-        } catch(err){
-            response(500,err,'internal server error \n gagal menambahkan contact',res)
-
-        }
-    },
-    put: async (req, res) => {
-        const updated = req.body
-        const id = req.params._id
-        try{
-            console.log(updated);
-            const updateContact = await contactModel.findByIdAndUpdate(id,updated,{new:true})
-            response(200,updateContact,'contact berhasil di ubah',res)
-        }catch(err){
-            response(500,err,'internal server error \n gagal mengubah contact',res)
-        }
-    },
-    delete: async (req, res) => {
-        const id = req.params._id
-        try{
-            const deleteContact = await contactModel.findByIdAndDelete(id)
-            response(200,deleteContact,'contact berhasil di hapus',res)
-        }catch(err){
-            response(500,err,'internal server error \n gagal menghapus contact',res)
-        }
-    }
+  },
 }
+  
