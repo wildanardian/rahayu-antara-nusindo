@@ -38,6 +38,6 @@ app.use('/visimisi', visiMisiRouter);
 app.use('/message', messageRouter);
 // use routes
 
-app.listen(process.env.local_port, () => {
+app.listen(process.env.local_port || 3100,  () => {
     console.log(`Server dimulai pada server ${process.env.local_port}`);
 });
