@@ -5,7 +5,7 @@ const ofpSchema = new Schema({
     title: {type: String, required: true},
     image: {type: String, required: true},
     content: {type: String, required: true},
-    price: {type: String, required: true},
+    price: {type: String, required: false},
     selected: {type: Boolean, required: false}
 }, {timestamps: true})
 
