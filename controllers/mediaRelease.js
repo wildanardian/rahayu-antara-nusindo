@@ -74,7 +74,7 @@ module.exports = {
                 update = {
                     title,
                     content,
-                    image: req.file.path 
+                    image: req.file.filename 
                 };
             } 
 
