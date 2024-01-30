@@ -13,7 +13,14 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
 // database connection
-mongoose.connect('mongodb://ahlilfikri94:futari123@ac-tcscyzb-shard-00-00.dxk3ml1.mongodb.net:27017,ac-tcscyzb-shard-00-01.dxk3ml1.mongodb.net:27017,ac-tcscyzb-shard-00-02.dxk3ml1.mongodb.net:27017/?ssl=true&replicaSet=atlas-dz4s73-shard-0&authSource=admin&retryWrites=true&w=majority')
+mongoose.connect(process.env.DATABASE_URL)
+.then(() => {
+    console.log('Database terhubung');
+}
+).catch((err) => {
+    console.log(err);
+}
+);
 // database connection
 
 // routes

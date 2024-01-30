@@ -3,10 +3,10 @@ const router = express.Router();
 
 const ofpController = require('../controllers/ofp');
 
-router.get('/', ofpController.get);
-router.get('/:_id', ofpController.getSingle);
-router.post('/', ofpController.post);
-router.put('/:_id', ofpController.put);
-router.delete('/:_id', ofpController.delete);
+router.get('/', ofpController.get); // http://localhost:3700/ofp
+router.get('/:_id', ofpController.getSingle); // http://localhost:3700/ofp/:_id
+router.post('/', ofpController.post); // http://localhost:3700/ofp
+router.put('/:_id', ofpController.put); // http://localhost:3700/ofp/:_id
+router.delete('/:_id', ofpController.delete); // http://localhost:3700/ofp/:_id
 
 module.exports = router;
