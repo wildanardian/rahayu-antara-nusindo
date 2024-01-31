@@ -32,6 +32,7 @@ const aboutRouter = require('./routers/about');
 const ofpRouter = require('./routers/ofp');
 const visiMisiRouter = require('./routers/visiMisi');
 const messageRouter = require('./routers/message');
+const mitraRouter = require('./routers/mitra');
 // routes
 
 // use routes
@@ -43,8 +44,9 @@ app.use('/about', aboutRouter);
 app.use('/ofp', ofpRouter);
 app.use('/visimisi', visiMisiRouter);
 app.use('/message', messageRouter);
+app.use('/mitra',mitraRouter);
 // use routes
 
 app.listen(process.env.local_port,  () => {
-    console.log(`Server dimulai pada server ${process.env.local_port}`);
+    console.log(`Server running on port http://localhost:${process.env.local_port}`);
 });
