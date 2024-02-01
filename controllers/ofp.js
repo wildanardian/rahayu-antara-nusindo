@@ -31,6 +31,8 @@ module.exports = {
     //         response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
     //     }
     // },
+
+    
     post: async(req, res) => {
         upload(req, res, async(error) => {
             if(error instanceof multer.MulterError){
@@ -64,6 +66,7 @@ module.exports = {
             }
         });
     },
+
     put: async(req, res) => {
         const id = req.params._id;
         upload(req, res, async(error) => {
