@@ -139,7 +139,7 @@ module.exports = {
             response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
         }
     },
-    //search by title and katagori
+    //search by title katagori
     search: async(req, res) => {
         try {
             const {dataSearch} = req.body;
