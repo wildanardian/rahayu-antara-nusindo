@@ -33,6 +33,7 @@ const ofpRouter = require('./routers/ofp');
 const visiMisiRouter = require('./routers/visiMisi');
 const messageRouter = require('./routers/message');
 const mitraRouter = require('./routers/mitra');
+const bannerRouter = require('./routers/banner');
 // routes
 
 // use routes
@@ -45,6 +46,7 @@ app.use('/ofp', ofpRouter);
 app.use('/visimisi', visiMisiRouter);
 app.use('/message', messageRouter);
 app.use('/mitra',mitraRouter);
+app.use('/banner',bannerRouter);
 // use routes
 
 app.listen(process.env.local_port,  () => {
