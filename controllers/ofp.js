@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const ofpModel = require("../models/ofp");
+const kategoriSchema = require('../models/kategori')
 const response = require("../respons/response_valid");
 const upload = require('../middleware/filepath');
 const multer = require("multer");
@@ -38,17 +39,25 @@ module.exports = {
                 response(500, error, 'Internal Server Error \n Gagal menambahkan favorite product', res);
             }else {
                 try {
-                    const {title, content,price} = req.body;
+                    const {title, content,price,kategori} = req.body;
                     const image = req.file.filename;
 
+                    // jika kategori tidak ada maka
+
+                    // mencari kategori berdasarkan nama kategori
+                    const katagori = await kategoriSchema.findOne({nama:kategori});
                     const newOfp = new ofpModel({
                         title,
                         content,
                         price,
+                        kategori,
                         image               
                     });
+                  
                     await newOfp.save();
-                    response(201, newOfp, 'Favorite Product Berhasil ditambahkan', res);
+                    katagori.ofp.push(newOfp);
+                    await katagori.save();
+                    response(201, {newOfp,katagori}, 'Favorite Product Berhasil ditambahkan', res);
                 } catch (error) {
                     response(500, error, 'Internal Server Error \n Gagal menambahkan favorite product', res);
                 }
@@ -64,23 +73,21 @@ module.exports = {
                 response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
             }else {
                 try {
-                    const { title, content,price } = req.body;
-                    let update = { title, content };;
-        
-                    if (req.file) {
-                        update = {
-                            title,
-                            content,
-                            price,
-                            image: req.file.filename 
-                        };
+                    const { title, content,price,kategori } = req.body;
+                    const image = req.file.filename;
+            
+                    if(kategori){
+                        const katagori = await kategoriSchema.findOne({nama:kategori});
+                        katagori.ofp.push(id);
+                        await katagori.save();
                     }
-
-                    const updatedOfp = await ofpModel.findByIdAndUpdate(
-                        id,
-                        update,
-                        {new: true}
-                    );
+                    const updatedOfp = await ofpModel.findByIdAndUpdate(id, {
+                        title,
+                        content,
+                        price,
+                        kategori,
+                        image
+                    }, {new: true});
                     response(200, updatedOfp, 'Favorite Product berhasil diperbarui', res);
                 } catch (error) {
                     console.log(error.message);

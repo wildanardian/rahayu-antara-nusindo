@@ -6,7 +6,8 @@ const ofpSchema = new Schema({
     image: {type: String, required: true},
     content: {type: String, required: true},
     price: {type: String, required: false},
-    selected: {type: Boolean, required: false}
+    selected: {type: Boolean, required: false},
+    kategori: {type: Schema.Types.ObjectId, ref: 'kategori', required:false}
 }, {timestamps: true})
 
 const ofp = mongoose.model('ofp', ofpSchema);
