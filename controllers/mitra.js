@@ -1,6 +1,7 @@
 const mitraSchema = require('../models/mitra');
 const response = require('../respons/response_valid');
 const multer = require('multer');
+const upload = require('../middleware/filepath');
 
 module.exports = {
     get:async (req,res) =>{
@@ -23,7 +24,7 @@ module.exports = {
                 response(500, error, 'internal server error \n gagal menambahkan gambar mitra', res);
             } else {
                 try {
-                    const { title } = req.body;
+                    const { nama } = req.body;
                     if (!req.file) {
                         response(400, null, 'Berkas gambar (image) diperlukan', res);
                         return;
@@ -31,7 +32,7 @@ module.exports = {
             
                     const image = req.file.filename;
                     const newData = new mitraSchema({
-                        title,
+                        nama,
                         image
                     });
                     await newData.save();
@@ -52,12 +53,12 @@ module.exports = {
                 response(500, error, 'internal server error \n gagal menambahkan gambar mitra', res);
             } else {
                 try {
-                    const { title } = req.body;
+                    const { nama } = req.body;
                     let update = { title };
 
                     if (req.file) {
                         update = {
-                            title,
+                            nama,
                             image: req.file.filename 
                         };
                     }
