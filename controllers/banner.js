@@ -54,7 +54,7 @@ module.exports = {
             } else {
                 try {
                     const { nama } = req.body;
-                    let update = { title };
+                    let update = { nama };
 
                     if (req.file) {
                         update = {
@@ -62,8 +62,9 @@ module.exports = {
                             image: req.file.filename
                         };
                     }
-                    await bannerSchema.findByIdAndUpdate(id, update);
-                    response(200, null, 'banner berhasil di update', res);
+                    const newData = await bannerSchema.findByIdAndUpdate(id, update);
+                    await newData.save();
+                    response(200, newData, 'banner berhasil di update', res);
                 } catch (error) {
                     console.log(error.message);
                     response(500,
