@@ -6,7 +6,6 @@ const bannerSchema = new Schema({
     image : {type: String, required: true},
 },{timestamps: true})
 
-
 const banner = mongoose.model('banner',bannerSchema);
 
 module.exports = banner
