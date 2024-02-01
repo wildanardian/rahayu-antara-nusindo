@@ -34,6 +34,7 @@ const visiMisiRouter = require('./routers/visiMisi');
 const messageRouter = require('./routers/message');
 const mitraRouter = require('./routers/mitra');
 const bannerRouter = require('./routers/banner');
+const kategoriRouter = require('./routers/kategori');
 // routes
 
 // use routes
@@ -47,6 +48,7 @@ app.use('/visimisi', visiMisiRouter);
 app.use('/message', messageRouter);
 app.use('/mitra',mitraRouter);
 app.use('/banner',bannerRouter);
+app.use('/kategori', kategoriRouter);
 // use routes
 
 app.listen(process.env.local_port,  () => {

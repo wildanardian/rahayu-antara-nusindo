@@ -3,6 +3,7 @@ const ofpModel = require("../models/ofp");
 const kategoriSchema = require('../models/kategori')
 const response = require("../respons/response_valid");
 const upload = require('../middleware/filepath');
+require("dotenv").config();
 const multer = require("multer");
 
 module.exports = {
@@ -32,7 +33,7 @@ module.exports = {
     //     }
     // },
 
-    
+
     post: async(req, res) => {
         upload(req, res, async(error) => {
             if(error instanceof multer.MulterError){
@@ -43,23 +44,24 @@ module.exports = {
                 try {
                     const {title, content,price,kategori} = req.body;
                     const image = req.file.filename;
-
-                    // jika kategori tidak ada maka
-
+                    let defaultKategori = process.env.DEFAULT_KATEGORI;
+                    if(!kategori){
+                        kategori = defaultKategori;
+                    }
                     // mencari kategori berdasarkan nama kategori
-                    const katagori = await kategoriSchema.findOne({nama:kategori});
+                    const dataKatagori = await kategoriSchema.findOne({nama:kategori});
                     const newOfp = new ofpModel({
                         title,
                         content,
                         price,
-                        kategori,
+                        kategori : dataKatagori._id,
                         image               
                     });
-                  
+
                     await newOfp.save();
-                    katagori.ofp.push(newOfp);
-                    await katagori.save();
-                    response(201, {newOfp,katagori}, 'Favorite Product Berhasil ditambahkan', res);
+                    dataKatagori.ofp.push(newOfp);
+                    await dataKatagori.save();
+                    response(201, {newOfp,dataKatagori}, 'Favorite Product Berhasil ditambahkan', res);
                 } catch (error) {
                     response(500, error, 'Internal Server Error \n Gagal menambahkan favorite product', res);
                 }
@@ -106,6 +108,58 @@ module.exports = {
             response(200, result, 'Favorite Product berhasil dihapus', res);
         }catch(error){
             response(500, error, 'Internal Server Error \n Gagal menghapus favorite product',res)
+        }
+    },
+
+    // sort by kategori
+    getKategori: async(req, res) => {
+        try {
+            const {kategori} = req.body;
+            const dataKategori = await kategoriSchema.findOne({nama:kategori}).populate('ofp');
+            response(200, dataKategori, 'Menampilkan kategori', res);
+        } catch (error) {
+            response(500, error, 'Internal Server Error \n Gagal menampilkan kategori', res);
+        }
+    },
+    //sort leatest 
+    getLeatest: async(req, res) => {
+        try {
+            const content = await ofpModel.find().sort({createdAt: -1});
+            response(200,content,'menampilkan semua ofp', res)
+        }catch(err){
+            response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
+        }
+    },
+    //sort paling awal di buat
+    getOldest: async(req, res) => {
+        try {
+            const content = await ofpModel.find().sort({createdAt: 1});
+            response(200,content,'menampilkan semua ofp', res)
+        }catch(err){
+            response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
+        }
+    },
+    //search by title and katagori
+    search: async(req, res) => {
+        try {
+            const {dataSearch} = req.body;
+            const data = dataSearch.toLowerCase();
+            const dataSlice = data.slice(0,4);
+            const content = await ofpModel.find({title: {$regex: dataSlice, $options: 'i'}}).populate('kategori');
+            const kategori = await kategoriSchema.find({nama: {$regex: dataSlice, $options: 'i'}}).populate('ofp');
+            if(content.length === 0 && kategori.length === 0){
+                response(200, 'data tidak ditemukan', 'Menampilkan hasil pencarian', res);
+                return;
+            }
+            const result = [...content, ...kategori];
+            const unique = result.filter((item, index) => {
+                return result.indexOf(item) === index;
+            });
+
+            response(200, unique, 'Menampilkan hasil pencarian', res);
+            
+        }catch(err){
+            
         }
     },
 };
