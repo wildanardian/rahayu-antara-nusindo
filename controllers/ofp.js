@@ -87,6 +87,8 @@ module.exports = {
                         const katagori = await kategoriSchema.findOne({ nama: kategori });
                         katagori.ofp.push(id);
                         await katagori.save();
+                    }else{
+                        kategori = process.env.DEFAULT_KATEGORI;
                     }
                     const updatedOfp = await ofpModel.findByIdAndUpdate(id, {
                         title,
