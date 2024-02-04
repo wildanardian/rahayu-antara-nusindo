@@ -7,6 +7,8 @@ const ofpSchema = new Schema({
     content: {type: String, required: true},
     price: {type: String, required: false},
     selected: {type: Boolean, required: false},
+    desktipsi: {type: [String], required: false},
+    spesifikasi: {type: [String], required: false},
     kategori: {type: Schema.Types.ObjectId, ref: 'kategori', required:false}
 }, {timestamps: true})
 
