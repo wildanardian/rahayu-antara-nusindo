@@ -81,10 +81,12 @@ module.exports = {
                     const { title, content,price,kategori } = req.body;
                     const image = req.file.filename;
             
-                    if(kategori){
+                    if(kategori){ // jika kategori di update
                         const katagori = await kategoriSchema.findOne({nama:kategori});
                         katagori.ofp.push(id);
                         await katagori.save();
+                    }else{
+                        kategori = process.env.DEFAULT_KATEGORI;
                     }
                     const updatedOfp = await ofpModel.findByIdAndUpdate(id, {
                         title,
