@@ -45,9 +45,9 @@ module.exports = {
                 const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
                 const image = req.file.filename;
 
-                let kategoriId; // Define variable to hold category ID
+                let kategoriId; 
 
-                // Search for category based on category name
+                
                 const dataKategori = await kategoriSchema.findOne({ nama: kategori });
                 if (!dataKategori) {
                     kategoriId = process.env.DEFAULT_KATEGORI;
@@ -59,7 +59,7 @@ module.exports = {
                     title,
                     content,
                     price,
-                    kategori: kategoriId, // Use category ID
+                    kategori: kategoriId, 
                     image,
                     deskripsi,
                     spesifikasi
@@ -125,7 +125,7 @@ module.exports = {
     // sort by kategori //req.params
     getKategori: async (req, res) => {
         try {
-            const { kategori } = req.body;
+            const { kategori } = req.params;
             const dataKategori = await kategoriSchema.findOne({ nama: kategori }).populate('ofp');
             response(200, dataKategori, 'Menampilkan kategori', res);
         } catch (error) {
@@ -150,7 +150,7 @@ module.exports = {
             response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
         }
     },
-    
+
     search: async (req, res) => {
         try {
             const { title } = req.params;
