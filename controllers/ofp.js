@@ -150,18 +150,25 @@ module.exports = {
             response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
         }
     },
-    //search by title katagori  // req.params 
+    
     search: async (req, res) => {
         try {
-            const { title } = req.body;
-            console.log(title);
+            const { title } = req.params;
             const content = await ofpModel.find({ title: { $regex: title, $options: 'i' } })
-            console.log(content);
-            res.json({
-          
-                message: 'menampilkan semua ofp',
-                data: content
-            })
+            const kategori = await kategoriSchema.find({ nama: { $regex: title, $options: 'i' } })
+            
+            if (content.length === 0 && kategori.length === 0) {
+                return res.status(404).json({ message: 'Data tidak ditemukan' });
+            }
+    
+            const result = {
+                "product" : content,
+                "kategori" : kategori
+            }
+
+    
+            return res.status(200).json({ data: result, message: 'Menampilkan hasil pencarian' });
+
             
         } catch (err) {
             console.log(err);
