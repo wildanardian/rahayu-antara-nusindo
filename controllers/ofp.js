@@ -36,37 +36,42 @@ module.exports = {
 
     post: async (req, res) => {
         upload(req, res, async (error) => {
-            if (error instanceof multer.MulterError) {
-                response(500, error, 'Internal Server Error \n Gagal menambahkan favorite product', res);
-            } else if (error) {
-                response(500, error, 'Internal Server Error \n Gagal menambahkan favorite product', res);
-            } else {
-                try {
-                    const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
-                    const image = req.file.filename;
-                    let defaultKategori = process.env.DEFAULT_KATEGORI;
-                    if (!kategori) {
-                        kategori = defaultKategori;
-                    }
-                    // mencari kategori berdasarkan nama kategori
-                    const dataKatagori = await kategoriSchema.findOne({ nama: kategori });
-                    const newOfp = new ofpModel({
-                        title,
-                        content,
-                        price,
-                        kategori: dataKatagori._id,
-                        image,
-                        deskripsi,
-                        spesifikasi
-                    });
+            if (error) {
+                console.error(error);
+                return response(500, {}, 'Internal Server Error \n Gagal menambahkan favorite product', res);
+            }
 
-                    await newOfp.save();
-                    dataKatagori.ofp.push(newOfp);
-                    await dataKatagori.save();
-                    response(201, { newOfp, dataKatagori }, 'Favorite Product Berhasil ditambahkan', res);
-                } catch (error) {
-                    response(500, error, 'Internal Server Error \n Gagal menambahkan favorite product', res);
+            try {
+                const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
+                const image = req.file.filename;
+
+                let kategoriId; // Define variable to hold category ID
+
+                // Search for category based on category name
+                const dataKategori = await kategoriSchema.findOne({ nama: kategori });
+                if (!dataKategori) {
+                    kategoriId = process.env.DEFAULT_KATEGORI;
+                } else {
+                    kategoriId = dataKategori._id;
                 }
+
+                const newOfp = new ofpModel({
+                    title,
+                    content,
+                    price,
+                    kategori: kategoriId, // Use category ID
+                    image,
+                    deskripsi,
+                    spesifikasi
+                });
+
+                await newOfp.save();
+                dataKategori.ofp.push(newOfp);
+                await dataKategori.save();
+                response(201, { newOfp, dataKategori }, 'Favorite Product Berhasil ditambahkan', res);
+            } catch (error) {
+                console.error(error);
+                response(500, {}, 'Internal Server Error \n Gagal menambahkan favorite product', res);
             }
         });
     },
@@ -117,7 +122,7 @@ module.exports = {
         }
     },
 
-    // sort by kategori
+    // sort by kategori //req.params
     getKategori: async (req, res) => {
         try {
             const { kategori } = req.body;
@@ -145,27 +150,26 @@ module.exports = {
             response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
         }
     },
-    //search by title katagori
+    //search by title katagori  // req.params 
     search: async (req, res) => {
         try {
-            const { dataSearch } = req.body;
-            const data = dataSearch.toLowerCase();
-            const dataSlice = data.slice(0, 4);
-            const content = await ofpModel.find({ title: { $regex: dataSlice, $options: 'i' } }).populate('kategori');
-            const kategori = await kategoriSchema.find({ nama: { $regex: dataSlice, $options: 'i' } }).populate('ofp');
-            if (content.length === 0 && kategori.length === 0) {
-                response(200, 'data tidak ditemukan', 'Menampilkan hasil pencarian', res);
-                return;
-            }
-            const result = [...content, ...kategori];
-            const unique = result.filter((item, index) => {
-                return result.indexOf(item) === index;
-            });
-
-            response(200, unique, 'Menampilkan hasil pencarian', res);
-
+            const { title } = req.body;
+            console.log(title);
+            const content = await ofpModel.find({ title: { $regex: title, $options: 'i' } })
+            console.log(content);
+            res.json({
+          
+                message: 'menampilkan semua ofp',
+                data: content
+            })
+            
         } catch (err) {
-
+            console.log(err);
+            response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
         }
-    },
+    }
+    
+    
+
+    
 };
