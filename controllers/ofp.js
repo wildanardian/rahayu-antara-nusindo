@@ -45,29 +45,35 @@ module.exports = {
                 const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
                 const image = req.file.filename;
 
-                let kategoriId; 
-
-                
-                const dataKategori = await kategoriSchema.findOne({ nama: kategori });
-                if (!dataKategori) {
-                    kategoriId = process.env.DEFAULT_KATEGORI;
-                } else {
-                    kategoriId = dataKategori._id;
-                }
-
-                const newOfp = new ofpModel({
+                const newOfp = new ofpModel({ 
                     title,
                     content,
                     price,
-                    kategori: kategoriId, 
                     image,
                     deskripsi,
                     spesifikasi
                 });
 
-                await newOfp.save();
-                dataKategori.ofp.push(newOfp);
-                await dataKategori.save();
+                let kategoriId; 
+
+                const dataKategori = await kategoriSchema.findOne({ nama: kategori });
+                const dataNonKategori = await kategoriSchema.findById(process.env.DEFAULT_KATEGORI);
+
+
+                if (!dataKategori) {
+                    kategoriId = process.env.DEFAULT_KATEGORI;
+                    dataNonKategori.ofp.push(newOfp);
+                    newOfp.kategori = kategoriId;
+                    await dataNonKategori.save();
+                    await newOfp.save();
+                    
+                } else {
+                    kategoriId = dataKategori._id;
+                    dataKategori.ofp.push(newOfp);
+                    newOfp.kategori = kategoriId;
+                    await dataKategori.save();
+                    await newOfp.save();
+                }
                 response(201, { newOfp, dataKategori }, 'Favorite Product Berhasil ditambahkan', res);
             } catch (error) {
                 console.error(error);
