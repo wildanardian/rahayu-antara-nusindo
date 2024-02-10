@@ -35,7 +35,7 @@ module.exports = {
 
 
     post: async (req, res) => {
-        upload(req, res, async (error) => {
+        upload.single(req, res, async (error) => {
             if (error) {
                 console.error(error);
                 return response(500, {}, 'Internal Server Error \n Gagal menambahkan favorite product', res);

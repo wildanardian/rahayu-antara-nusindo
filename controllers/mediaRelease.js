@@ -5,34 +5,31 @@ const upload = require('../middleware/filepath');
 const multer = require('multer');
 
 module.exports = {
-  post: async (req, res) => {
-    upload.array('images')(req, res, async (error) => {
-      if (error instanceof multer.MulterError) {
-        console.log(error.message);
-        response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
-      } else if (error) {
-        console.log(error.message);
-        response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
-      } else {
+    post: async (req, res) => {
+      upload.many(req, res, async (error) => {
+        if (error) {
+          console.error(error.message);
+          res.status(500).send({ message: 'Internal server error', error });
+          return;
+        }
+
         try {
           const { title, content, status } = req.body;
           const images = req.files.map((file) => file.filename);
-  
-          const newEvent = new mediaReleaseSchema({
+          const newMediaRelease = new mediaReleaseSchema({
             title,
             content,
-            image : images,
-            status
+            status,
+            image: images,
           });
-          await newEvent.save();
-          response(201, newEvent, 'event berhasil di tambahkan', res);
+          await newMediaRelease.save();
+          res.status(201).send({ message: 'Event berhasil ditambahkan', data: newMediaRelease });
         } catch (error) {
-          console.log(error.message);
-          response(500, error, 'internal server error \n gagal menambahkan event', res);
+          console.error(error.message);
+          res.status(500).send({ message: 'Internal server error', error });
         }
-      }
-    });
-  },   
+      });
+    }, 
     get:async (req, res) => {
         try{
             const content = await mediaReleaseSchema.find();

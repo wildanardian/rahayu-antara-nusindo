@@ -15,7 +15,7 @@ module.exports = {
         }
     },
     post:async(req,res) =>{
-        upload(req, res, async (error) => {
+        upload.single(req, res, async (error) => {
             if (error instanceof multer.MulterError) {
                 console.log(error.message);
                 response(500, error, 'internal server error \n gagal menambahkan gambar mitra', res);
@@ -29,13 +29,14 @@ module.exports = {
                         response(400, null, 'Berkas gambar (image) diperlukan', res);
                         return;
                     }
+            
                     const image = req.file.filename;
-                    const newMitra = new mitraSchema({ 
-                        title: nama,
-                        image 
+                    const newData = new mitraSchema({
+                        title :nama,
+                        image
                     });
-                    await newMitra.save();
-                    response(201, newMitra, 'mitra berhasil ditambahkan', res);
+                    await newData.save();
+                    response(201, newData, 'mitra berhasil di tambahkan', res);
                 } catch (error) {
                     console.log(error.message);
                     response(500, error, 'internal server error \n gagal menambahkan mitra', res);
@@ -43,6 +44,8 @@ module.exports = {
             }
         });
     },
+
+
     put: async (req, res) => {
         const id = req.params._id;
         upload(req, res, async (error) => {
