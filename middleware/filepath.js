@@ -21,9 +21,22 @@ const fileFilter = (req, file, next) => {
     }
   };
   
-  const uploadFile = multer({
+const uploadFile = multer({
+  storage: fileStorage,
+  fileFilter: fileFilter,
+}).single('image');
+
+const uploadMultiple = multer({
     storage: fileStorage,
     fileFilter: fileFilter,
-  }).single('image');
+}).array('image', 10);
+
+const upload = (files, req, res, next) => {
+    if (files.length > 1) {
+        uploadMultiple(req, res, next);
+    } else {
+        uploadFile(req, res, next);
+    }
+};
   
-  module.exports = uploadFile;
+  module.exports = upload;

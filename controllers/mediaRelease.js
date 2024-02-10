@@ -5,6 +5,34 @@ const upload = require('../middleware/filepath');
 const multer = require('multer');
 
 module.exports = {
+  post: async (req, res) => {
+    upload.array('images')(req, res, async (error) => {
+      if (error instanceof multer.MulterError) {
+        console.log(error.message);
+        response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
+      } else if (error) {
+        console.log(error.message);
+        response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
+      } else {
+        try {
+          const { title, content, status } = req.body;
+          const images = req.files.map((file) => file.filename);
+  
+          const newEvent = new mediaReleaseSchema({
+            title,
+            content,
+            image : images,
+            status
+          });
+          await newEvent.save();
+          response(201, newEvent, 'event berhasil di tambahkan', res);
+        } catch (error) {
+          console.log(error.message);
+          response(500, error, 'internal server error \n gagal menambahkan event', res);
+        }
+      }
+    });
+  },   
     get:async (req, res) => {
         try{
             const content = await mediaReleaseSchema.find();
@@ -27,37 +55,7 @@ module.exports = {
             response(500, err, 'internal server error \n gagal menampilkan event', res);
         }
     },
-    post: async (req, res) => {
-        upload(req, res, async (error) => {
-          if (error instanceof multer.MulterError) {
-            console.log(error.message);
-            response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
-          } else if (error) {
-            console.log(error.message);
-            response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
-          } else {
-            try {
-              const { title, content, status } = req.body;
-              if (!req.file) {
-                response(400, null, 'Berkas gambar (image) diperlukan', res);
-                return;
-              }
-      
-              const image = req.file.filename;
-              const newEvent = new mediaReleaseSchema({
-                title,
-                content,
-                image
-              });
-              await newEvent.save();
-              response(201, newEvent, 'event berhasil di tambahkan', res);
-            } catch (error) {
-              console.log(error.message);
-              response(500, error, 'internal server error \n gagal menambahkan event', res);
-            }
-          }
-        });
-      },
+ 
     put: async (req, res) => {
         const id = req.params._id;
         upload(req, res, async (error) => {

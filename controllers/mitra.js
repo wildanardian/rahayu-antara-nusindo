@@ -29,14 +29,13 @@ module.exports = {
                         response(400, null, 'Berkas gambar (image) diperlukan', res);
                         return;
                     }
-            
                     const image = req.file.filename;
-                    const newData = new mitraSchema({
-                        nama,
-                        image
+                    const newMitra = new mitraSchema({ 
+                        title: nama,
+                        image 
                     });
-                    await newData.save();
-                    response(201, newData, 'mitra berhasil di tambahkan', res);
+                    await newMitra.save();
+                    response(201, newMitra, 'mitra berhasil ditambahkan', res);
                 } catch (error) {
                     console.log(error.message);
                     response(500, error, 'internal server error \n gagal menambahkan mitra', res);
