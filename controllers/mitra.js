@@ -24,7 +24,7 @@ module.exports = {
                 response(500, error, 'internal server error \n gagal menambahkan gambar mitra', res);
             } else {
                 try {
-                    const { nama } = req.body;
+                    const { title } = req.body;
                     if (!req.file) {
                         response(400, null, 'Berkas gambar (image) diperlukan', res);
                         return;
@@ -32,7 +32,7 @@ module.exports = {
             
                     const image = req.file.filename;
                     const newData = new mitraSchema({
-                        title :nama,
+                        title,
                         image
                     });
                     await newData.save();
