@@ -81,10 +81,9 @@ module.exports = {
             }
         });
     },
-
     put: async (req, res) => {
         const id = req.params._id;
-        upload(req, res, async (error) => {
+        upload.single(req, res, async (error) => {
             if (error instanceof multer.MulterError) {
                 response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
             } else if (error) {
@@ -92,21 +91,30 @@ module.exports = {
             } else {
                 try {
                     const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
-                    const image = req.file.filename;
-
-                    if (kategori) {
-                        const katagori = await kategoriSchema.findOne({ nama: kategori });
-                        katagori.ofp.push(id);
-                        await katagori.save();
-                    }else{
-                        kategori = process.env.DEFAULT_KATEGORI;
+                    let image = null;
+    
+                    if (req.file) {
+                        image = req.file.filename;
                     }
+    
+                    let updatedKategori = kategori;
+    
+                    const existingOfp = await ofpModel.findById(id);
+                    if (!existingOfp) {
+                        return response(404, null, 'Favorite Product not found', res);
+                    } else {
+                        // Menggunakan gambar yang ada jika tidak ada file yang diunggah
+                        if (!req.file) {
+                            image = existingOfp.image;
+                        }
+                    }
+                    
                     const updatedOfp = await ofpModel.findByIdAndUpdate(id, {
                         title,
                         content,
                         price,
-                        kategori,
-                        image, 
+                        kategori: updatedKategori, 
+                        image,
                         deskripsi,
                         spesifikasi
                     }, { new: true });
@@ -118,6 +126,8 @@ module.exports = {
             }
         });
     },
+    
+    
     delete: async (req, res) => {
         try {
             const id = req.params._id;
