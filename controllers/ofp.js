@@ -81,12 +81,59 @@ module.exports = {
             }
         });
     },
+    // put: async (req, res) => {
+    //     const id = req.params._id;
+    //     upload.single(req, res, async (error) => {
+    //         if (error instanceof multer.MulterError) {
+    //             response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
+    //         } else if (error) {
+    //             response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
+    //         } else {
+    //             try {
+    //                 const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
+    //                 let image = null;
+    
+    //                 if (req.file) {
+    //                     image = req.file.filename;
+    //                 }
+    
+    //                 let updatedKategori = kategori;
+    
+    //                 const existingOfp = await ofpModel.findById(id);
+    //                 if (!existingOfp) {
+    //                     return response(404, null, 'Favorite Product not found', res);
+    //                 } else {
+    //                     if (!req.file) {
+    //                         image = existingOfp.image;
+    //                     }
+    //                 }
+                    
+    //                 const updatedOfp = await ofpModel.findByIdAndUpdate(id, {
+    //                     title,
+    //                     content,
+    //                     price,
+    //                     kategori: updatedKategori, 
+    //                     image,
+    //                     deskripsi,
+    //                     spesifikasi
+    //                 }, { new: true });
+    //                 response(200, updatedOfp, 'Favorite Product berhasil diperbarui', res);
+    //             } catch (error) {
+    //                 console.log(error.message);
+    //                 response(500, error, 'Internal Server Error \n Gagal memperbarui favorite product', res);
+    //             }
+    //         }
+    //     });
+    // },
+
     put: async (req, res) => {
         const id = req.params._id;
         upload.single(req, res, async (error) => {
             if (error instanceof multer.MulterError) {
+                console.log("Error during file upload:", error);
                 response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
             } else if (error) {
+                console.log("Unknown error during file upload:", error);
                 response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
             } else {
                 try {
@@ -94,6 +141,7 @@ module.exports = {
                     let image = null;
     
                     if (req.file) {
+                        console.log("New image received:", req.file);
                         image = req.file.filename;
                     }
     
@@ -101,10 +149,11 @@ module.exports = {
     
                     const existingOfp = await ofpModel.findById(id);
                     if (!existingOfp) {
+                        console.log("Favorite product not found with ID:", id);
                         return response(404, null, 'Favorite Product not found', res);
                     } else {
-                        // Menggunakan gambar yang ada jika tidak ada file yang diunggah
                         if (!req.file) {
+                            console.log("No new image received. Keeping existing image:", existingOfp.image);
                             image = existingOfp.image;
                         }
                     }
@@ -118,14 +167,16 @@ module.exports = {
                         deskripsi,
                         spesifikasi
                     }, { new: true });
+                    console.log("Favorite product successfully updated:", updatedOfp);
                     response(200, updatedOfp, 'Favorite Product berhasil diperbarui', res);
                 } catch (error) {
-                    console.log(error.message);
+                    console.log("Error during product update:", error.message);
                     response(500, error, 'Internal Server Error \n Gagal memperbarui favorite product', res);
                 }
             }
         });
     },
+    
     
     
     delete: async (req, res) => {
