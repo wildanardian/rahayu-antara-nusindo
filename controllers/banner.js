@@ -46,7 +46,7 @@ module.exports = {
     },
     put: async (req, res) => {
         const id = req.params._id;
-        upload(req, res, async (error) => {
+        upload.single(req, res, async (error) => {
             if (error instanceof multer.MulterError) {
                 response(500, error, 'internal server error \n gagal menambahkan gambar banner', res);
             } else if (error) {
@@ -76,6 +76,8 @@ module.exports = {
             }
         });
     },
+
+    
     delete: async (req, res) => {
         try {
             const id = req.params._id;

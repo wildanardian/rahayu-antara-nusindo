@@ -48,19 +48,19 @@ module.exports = {
 
     put: async (req, res) => {
         const id = req.params._id;
-        upload(req, res, async (error) => {
+        upload.single(req, res, async (error) => {
             if (error instanceof multer.MulterError) {
                 response(500, error, 'internal server error \n gagal menambahkan gambar mitra', res);
             } else if (error) {
                 response(500, error, 'internal server error \n gagal menambahkan gambar mitra', res);
             } else {
                 try {
-                    const { nama } = req.body;
+                    const { title } = req.body;
                     let update = { title };
 
                     if (req.file) {
                         update = {
-                            nama,
+                            title,
                             image: req.file.filename 
                         };
                     }
@@ -68,7 +68,7 @@ module.exports = {
                     const updateData = await mitraSchema.findByIdAndUpdate(id,update,{ new: true });
                     response(200, updateData, 'mitra berhasil diperbarui', res);
                 } catch (error) {
-                    console.log(error.message);
+                    console.log('error : \n ',error.message);
                     response(500, error, 'internal server error \n gagal memperbarui mitra', res);
                 }
             }
