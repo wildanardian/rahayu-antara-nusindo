@@ -9,7 +9,6 @@ module.exports = {
     
     hitungPengunjung: (req, res) => {
         pengunjung++;
-        console.log("pengunjung : ", pengunjung)
         return res.send("seep")
     }
 }
