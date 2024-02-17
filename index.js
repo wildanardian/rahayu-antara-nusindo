@@ -35,6 +35,7 @@ const messageRouter = require('./routers/message');
 const mitraRouter = require('./routers/mitra');
 const bannerRouter = require('./routers/banner');
 const kategoriRouter = require('./routers/kategori');
+const visitorRouter = require('./routers/visitor');
 // routes
 
 // use routes
@@ -49,6 +50,7 @@ app.use('/message', messageRouter);
 app.use('/mitra',mitraRouter);
 app.use('/banner',bannerRouter);
 app.use('/kategori', kategoriRouter);
+app.use('/visit',visitorRouter);
 // use routes
 
 app.listen(process.env.local_port,  () => {
