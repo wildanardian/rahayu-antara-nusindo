@@ -73,7 +73,6 @@ module.exports = {
                 }
             }
         });
-        
     },
     delete: async (req, res) => {
         const id = req.params._id;

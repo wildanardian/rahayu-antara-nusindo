@@ -5,6 +5,29 @@ const upload = require('../middleware/filepath');
 const multer = require('multer');
 
 module.exports = {
+    get:async (req, res) => {
+      try{
+        const content = await mediaReleaseSchema.find();
+        response(200,content,'menampilkan semua event',res)
+      }catch(err){
+        response(500,err,'internal server error \n gagal menampilkan event',res)
+      }
+    },
+    getOne: async (req, res) => {
+      const id = req.params._id;
+      try {
+        const content = await mediaReleaseSchema.findById(id);
+        if (!content) {
+          response(404, null, 'Event tidak ditemukan', res);
+          return;
+        }
+        response(200, content, 'menampilkan event', res);
+      } catch (err) {
+        console.log(err.message);
+        response(500, err, 'internal server error \n gagal menampilkan event', res);
+      }
+    },
+  
     post: async (req, res) => {
       upload.many(req, res, async (error) => {
         if (error) {
@@ -30,32 +53,9 @@ module.exports = {
         }
       });
     }, 
-    get:async (req, res) => {
-        try{
-            const content = await mediaReleaseSchema.find();
-            response(200,content,'menampilkan semua event',res)
-        }catch(err){
-            response(500,err,'internal server error \n gagal menampilkan event',res)
-        }
-    },
-    getOne: async (req, res) => {
-        const id = req.params._id;
-        try {
-            const content = await mediaReleaseSchema.findById(id);
-            if (!content) {
-                response(404, null, 'Event tidak ditemukan', res);
-                return;
-            }
-            response(200, content, 'menampilkan event', res);
-        } catch (err) {
-            console.log(err.message);
-            response(500, err, 'internal server error \n gagal menampilkan event', res);
-        }
-    },
- 
     put: async (req, res) => {
         const id = req.params._id;
-        upload(req, res, async (error) => {
+        upload.many(req, res, async (error) => {
         if (error instanceof multer.MulterError) {
             response(500, error, 'internal server error \n gagal menambahkan gambar event', res);
         } else if (error) {
@@ -69,7 +69,8 @@ module.exports = {
                 update = {
                     title,
                     content,
-                    image: req.file.filename 
+                    status,
+                    image: req.file.filename,
                 };
             } 
 
