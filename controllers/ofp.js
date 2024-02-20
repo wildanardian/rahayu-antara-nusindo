@@ -44,12 +44,22 @@ module.exports = {
             try {
                 const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
                 const image = req.file.filename;
-
+                const image2 = req.file.filename;
+                const image3 = req.file.filename;
+                const image4 = req.file.filename;
+                const image5 = req.file.filename;
+ 
                 const newOfp = new ofpModel({ 
                     title,
                     content,
                     price,
+
                     image,
+                    image2,
+                    image3,
+                    image4,
+                    image5,
+        
                     deskripsi,
                     spesifikasi
                 });
