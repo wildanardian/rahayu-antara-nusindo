@@ -5,6 +5,7 @@ const response = require("../respons/response_valid");
 const upload = require('../middleware/filepath');
 require("dotenv").config();
 const multer = require("multer");
+const fs = require('fs');
 
 module.exports = {
     get: async (req, res) => {
@@ -35,35 +36,25 @@ module.exports = {
 
 
     post: async (req, res) => {
-        upload.single(req, res, async (error) => {
+        upload.many(req, res, async (error) => {
             if (error) {
-                console.error(error);
-                return response(500, {}, 'Internal Server Error \n Gagal menambahkan favorite product', res);
+                console.error(error.message);
+                res.status(500).send({ message: 'Internal Server Error', error: error.message });
+                return;
             }
-
+    
             try {
-                const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
-                const image = req.file.filename;
-                const image2 = req.file.filename;
-                const image3 = req.file.filename;
-                const image4 = req.file.filename;
-                const image5 = req.file.filename;
- 
-                const newOfp = new ofpModel({ 
+                const { title, content, price,kategori, deskripsi, spesifikasi } = req.body;
+                const images = req.files.map((file) => file.filename);
+                const newOfp = new ofpModel({
                     title,
                     content,
                     price,
-
-                    image,
-                    image2,
-                    image3,
-                    image4,
-                    image5,
-        
+                    kategori,
+                    image: images,
                     deskripsi,
                     spesifikasi
                 });
-
                 let kategoriId; 
 
                 const dataKategori = await kategoriSchema.findOne({ nama: kategori });
@@ -84,111 +75,55 @@ module.exports = {
                     await dataKategori.save();
                     await newOfp.save();
                 }
-                response(201, { newOfp, dataKategori }, 'Favorite Product Berhasil ditambahkan', res);
-            } catch (error) {
-                console.error(error);
-                response(500, {}, 'Internal Server Error \n Gagal menambahkan favorite product', res);
-            }
-        });
-    },
-    // put: async (req, res) => {
-    //     const id = req.params._id;
-    //     upload.single(req, res, async (error) => {
-    //         if (error instanceof multer.MulterError) {
-    //             response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
-    //         } else if (error) {
-    //             response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
-    //         } else {
-    //             try {
-    //                 const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
-    //                 let image = null;
-    
-    //                 if (req.file) {
-    //                     image = req.file.filename;
-    //                 }
-    
-    //                 let updatedKategori = kategori;
-    
-    //                 const existingOfp = await ofpModel.findById(id);
-    //                 if (!existingOfp) {
-    //                     return response(404, null, 'Favorite Product not found', res);
-    //                 } else {
-    //                     if (!req.file) {
-    //                         image = existingOfp.image;
-    //                     }
-    //                 }
-                    
-    //                 const updatedOfp = await ofpModel.findByIdAndUpdate(id, {
-    //                     title,
-    //                     content,
-    //                     price,
-    //                     kategori: updatedKategori, 
-    //                     image,
-    //                     deskripsi,
-    //                     spesifikasi
-    //                 }, { new: true });
-    //                 response(200, updatedOfp, 'Favorite Product berhasil diperbarui', res);
-    //             } catch (error) {
-    //                 console.log(error.message);
-    //                 response(500, error, 'Internal Server Error \n Gagal memperbarui favorite product', res);
-    //             }
-    //         }
-    //     });
-    // },
 
-    put: async (req, res) => {
-        const id = req.params._id;
-        upload.single(req, res, async (error) => {
-            if (error instanceof multer.MulterError) {
-                console.log("Error during file upload:", error);
-                response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
-            } else if (error) {
-                console.log("Unknown error during file upload:", error);
-                response(500, error, 'Internal Server Error \n Gagal menambahkan gambar favorite product', res);
-            } else {
-                try {
-                    const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
-                    let image = null;
-    
-                    if (req.file) {
-                        console.log("New image received:", req.file);
-                        image = req.file.filename;
-                    }
-    
-                    let updatedKategori = kategori;
-    
-                    const existingOfp = await ofpModel.findById(id);
-                    if (!existingOfp) {
-                        console.log("Favorite product not found with ID:", id);
-                        return response(404, null, 'Favorite Product not found', res);
-                    } else {
-                        if (!req.file) {
-                            console.log("No new image received. Keeping existing image:", existingOfp.image);
-                            image = existingOfp.image;
-                        }
-                    }
-                    
-                    const updatedOfp = await ofpModel.findByIdAndUpdate(id, {
-                        title,
-                        content,
-                        price,
-                        kategori: updatedKategori, 
-                        image,
-                        deskripsi,
-                        spesifikasi
-                    }, { new: true });
-                    console.log("Favorite product successfully updated:", updatedOfp);
-                    response(200, updatedOfp, 'Favorite Product berhasil diperbarui', res);
-                } catch (error) {
-                    console.log("Error during product update:", error.message);
-                    response(500, error, 'Internal Server Error \n Gagal memperbarui favorite product', res);
-                }
+                res.status(201).send({ message: 'Favorite Product berhasil ditambahkan', data: newOfp });
+            } catch (error) {
+                console.error(error.message);
+                res.status(500).send({ message: 'Internal Server Error', error: error.message });
             }
         });
     },
-    
-    
-    
+
+    put : async (req, res) => {
+        const id = req.params._id;
+        upload.many(req, res, async (error) => {
+            if (error) {
+                console.error(error.message);
+                res.status(500).send({ message: 'Internal Server Error', error: error.message });
+                return;
+            }
+            const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
+            const {confirmUpdateImage} = req.body;
+            const updatedProduct = {
+                title,
+                content,
+                price,
+                kategori,
+                deskripsi,
+                spesifikasi
+            };
+
+            let images = [];
+            if (confirmUpdateImage === 'true') {
+                // menghapus gambar lama
+                const product = await ofpModel.findById(id);
+                product.image.forEach((image) => {
+                    fs.unlinkSync(`assets/${image}`);
+                });
+                // menambahkan gambar baru
+                images = req.files.map((file) => file.filename);
+                updatedProduct.image = images;
+            }
+            try {
+                const result = await ofpModel.findByIdAndUpdate(id, updatedProduct, { new: true });
+                res.status(200).send({ message: 'Product updated successfully', data: result });
+            } catch (error) {
+                console.error(error.message);
+                res.status(500).send({ message: 'Internal Server Error', error: error.message });
+            }
+        });
+    },
+        
     delete: async (req, res) => {
         try {
             const id = req.params._id;
