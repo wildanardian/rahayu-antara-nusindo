@@ -186,9 +186,34 @@ module.exports = {
             console.log(err);
             response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
         }
+    },
+    searchAndSort: async (req, res) => {
+        try {
+            const { search, sort } = req.params;
+            var result
+            if (search != '-1') {
+                // Mencari konten berdasarkan judul yang mengandung kata kunci pencarian
+                result = await ofpModel.find({ title: { $regex: search, $options: 'i' } });
+            } else {
+                // Jika tidak ada kriteria pencarian yang diberikan, kembalikan semua data 
+                console.log("test");
+                result = await ofpModel.find();
+            }
+            
+            if (sort) {
+                if (sort === "oldest") {
+                    result.sort((a, b) => a.createdAt - b.createdAt); // Urutkan dari terlama ke terbaru
+                } else if (sort === "latest") {
+                    result.sort((a, b) => b.createdAt - a.createdAt); // Urutkan dari terbaru ke terlama
+                }
+            }
+            console.log(search, sort);
+            console.log(result);
+            response(200, result, 'berhasil menampilkan data', res)
+        } catch (err) {
+            console.log(err);
+            response(500, err, 'Internal server error. Gagal menampilkan ofp', res)
+        }
     }
-    
-    
-
     
 };

@@ -1,6 +1,6 @@
 const express = require('express');
 const visitor = require('../controllers/visitor');
-const { router } = require('json-server');
+// const { router } = require('json-server');
 
 const Router = express.Router();
 
