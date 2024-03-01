@@ -42,9 +42,9 @@ module.exports = {
                 res.status(500).send({ message: 'Internal Server Error', error: error.message });
                 return;
             }
-    
+
             try {
-                const { title, content, price,kategori, deskripsi, spesifikasi } = req.body;
+                const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
                 const images = req.files.map((file) => file.filename);
                 const newOfp = new ofpModel({
                     title,
@@ -55,7 +55,7 @@ module.exports = {
                     deskripsi,
                     spesifikasi
                 });
-                let kategoriId; 
+                let kategoriId;
 
                 const dataKategori = await kategoriSchema.findOne({ nama: kategori });
                 const dataNonKategori = await kategoriSchema.findById(process.env.DEFAULT_KATEGORI);
@@ -67,7 +67,7 @@ module.exports = {
                     newOfp.kategori = kategoriId;
                     await dataNonKategori.save();
                     await newOfp.save();
-                    
+
                 } else {
                     kategoriId = dataKategori._id;
                     dataKategori.ofp.push(newOfp);
@@ -84,7 +84,7 @@ module.exports = {
         });
     },
 
-    put : async (req, res) => {
+    put: async (req, res) => {
         const id = req.params._id;
         upload.many(req, res, async (error) => {
             if (error) {
@@ -93,7 +93,7 @@ module.exports = {
                 return;
             }
             const { title, content, price, kategori, deskripsi, spesifikasi } = req.body;
-            const {confirmUpdateImage} = req.body;
+            const { confirmUpdateImage } = req.body;
             const updatedProduct = {
                 title,
                 content,
@@ -123,7 +123,7 @@ module.exports = {
             }
         });
     },
-        
+
     delete: async (req, res) => {
         try {
             const id = req.params._id;
@@ -168,20 +168,20 @@ module.exports = {
             const { title } = req.params;
             const content = await ofpModel.find({ title: { $regex: title, $options: 'i' } })
             const kategori = await kategoriSchema.find({ nama: { $regex: title, $options: 'i' } })
-            
+
             if (content.length === 0 && kategori.length === 0) {
                 return res.status(404).json({ message: 'Data tidak ditemukan' });
             }
-    
+
             const result = {
-                "product" : content,
-                "kategori" : kategori
+                "product": content,
+                "kategori": kategori
             }
 
-    
+
             return res.status(200).json({ data: result, message: 'Menampilkan hasil pencarian' });
 
-            
+
         } catch (err) {
             console.log(err);
             response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
@@ -189,31 +189,36 @@ module.exports = {
     },
     searchAndSort: async (req, res) => {
         try {
-            const { search, sort } = req.params;
+            const { search, sort, kategori } = req.params;
             var result
             if (search != '-1') {
-                // Mencari konten berdasarkan judul yang mengandung kata kunci pencarian
                 result = await ofpModel.find({ title: { $regex: search, $options: 'i' } });
             } else {
-                // Jika tidak ada kriteria pencarian yang diberikan, kembalikan semua data 
-                console.log("test");
                 result = await ofpModel.find();
             }
-            
+
             if (sort) {
                 if (sort === "oldest") {
-                    result.sort((a, b) => a.createdAt - b.createdAt); // Urutkan dari terlama ke terbaru
+                    result.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)); // Urutkan dari terlama ke terbaru
                 } else if (sort === "latest") {
-                    result.sort((a, b) => b.createdAt - a.createdAt); // Urutkan dari terbaru ke terlama
+                    result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Urutkan dari terbaru ke terlama
                 }
             }
-            console.log(search, sort);
-            console.log(result);
+
+            if (kategori !== 'none' && kategori !== undefined) {
+                const kategoriDoc = await kategoriSchema.findOne({ nama: kategori });
+    
+                if (kategoriDoc) {
+                    result = result.filter(item => item.kategori?.toString() === kategoriDoc._id?.toString());
+                } else {
+                    console.log(`Kategori "${kategori}" tidak ditemukan.`);
+                }
+            }
             response(200, result, 'berhasil menampilkan data', res)
         } catch (err) {
             console.log(err);
             response(500, err, 'Internal server error. Gagal menampilkan ofp', res)
         }
     }
-    
+
 };
