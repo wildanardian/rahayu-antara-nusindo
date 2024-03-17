@@ -15,7 +15,7 @@ module.exports = {
         }
     },
     post:async(req,res) =>{
-        upload(req, res, async (error) => {
+        upload.single(req, res, async (error) => {
             if (error instanceof multer.MulterError) {
                 console.log(error.message);
                 response(500, error, 'internal server error \n gagal menambahkan gambar banner', res);
