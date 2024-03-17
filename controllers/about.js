@@ -13,6 +13,8 @@ module.exports = {
       response(500, err, 'internal server error \n gagal menampilkan about', res);
     }
   },
+
+
   getSingle: async (req, res) => {
     id = req.params.id
     try {
@@ -22,6 +24,8 @@ module.exports = {
       response(500, err, 'internal server error \n gagal menampilkan about', res);
     }
   },
+
+  
   post: async (req, res) => {
     upload(req, res, async (error) => {
       if (error instanceof multer.MulterError) {

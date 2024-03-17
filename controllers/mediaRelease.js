@@ -28,6 +28,7 @@ module.exports = {
 			response(500, err, 'internal server error \n gagal menampilkan event', res);
 		}
     },
+
   
     post: async (req, res) => {
 		upload.many(req, res, async (error) => {
