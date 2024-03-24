@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const userModel = require("../models/user");
 const bcrypt = require("bcrypt");
+const { validationResult } = require('express-validator'); // npm install express-validator
 const jwt = require("jsonwebtoken");
 const response = require("../respons/response_valid")
 
@@ -31,27 +32,54 @@ module.exports = {
             response(500,err,'internal server error',res)
         }
     },
-    login: async (req, res) => {
-        try{
-            const {username, password} = req.body;
-            const secret_key = process.env.secret_key;
+    // login: async (req, res) => {
+    //     try{
+    //         const {username, password} = req.body;
+    //         const secret_key = process.env.secret_key;
 
-            const user = await userModel.findOne({username});
-            // mengecek apakah username valid
-            if(!user){
-                return response(400,user,'user tidak ditemukan',res)
+    //         const user = await userModel.findOne({username});
+    //         // mengecek apakah username valid
+    //         if(!user){
+    //             return response(400,user,'user tidak ditemukan',res)
+    //         }
+    //         // mengecek apakah password valid
+    //         const validPassword = await bcrypt.compare(password, user.password);
+    //         if(!validPassword){
+    //             return response(400,validPassword,'password salah',res)
+    //         }
+    //         // membuat token
+    //         const token = jwt.sign({id:user._id,jabatan:user.jabatan},secret_key,{expiresIn:'1d'});
+    //         response(200,{token},'login berhasil',res)
+    //     }catch(err){
+    //         console.log(err.message);
+    //         response(500,err,'internal server error',res)
+    //     }
+    // },
+    login: async (req, res) => {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
             }
-            // mengecek apakah password valid
+    
+            const { username, password } = req.body;
+            const secret_key = process.env.secret_key;
+    
+            const user = await userModel.findOne({ username });
+            if (!user) {
+                return res.status(400).json({ message: 'User tidak ditemukan' });
+            }
+    
             const validPassword = await bcrypt.compare(password, user.password);
-            if(!validPassword){
-                return response(400,validPassword,'password salah',res)
+            if (!validPassword) {
+                return res.status(400).json({ message: 'Password salah' });
             }
-            // membuat token
-            const token = jwt.sign({id:user._id,jabatan:user.jabatan},secret_key,{expiresIn:'1d'});
-            response(200,{token},'login berhasil',res)
-        }catch(err){
-            console.log(err.message);
-            response(500,err,'internal server error',res)
+    
+            const token = jwt.sign({ id: user._id, jabatan: user.jabatan }, secret_key, { expiresIn: '1d' });
+            res.status(200).json({ token, message: 'Login berhasil' });
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).json({ message: 'Internal server error' });
         }
     },
     getAllUser: async (req, res) => {
@@ -64,18 +92,16 @@ module.exports = {
         }
     },
     post: async (req, res) => {
+        const { username, password, email} = req.body;
         const passwordEncripted = await bcrypt.hash(password,15);
-        const {name, username, password, email, jabatan} = req.body;
         const newUser = new userModel({
-            name,
             username,
             password:passwordEncripted,
             email,
-            jabatan,
         })
         try{
             await newUser.save();
-            response(201,newUser,'user berhasil di daftarkan',res)
+            return response(201,newUser,'user berhasil di daftarkan',res)
         }catch(err){
             response(500,err,'internal server error',res)
         }
