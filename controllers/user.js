@@ -5,9 +5,37 @@ const { validationResult } = require('express-validator'); // npm install expres
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const response = require("../respons/response_valid");
+const dataUser = require("../utils/userdata");
 const { use } = require("../routers/user");
 
 module.exports = {
+    register:async (req, res) => {
+        try{
+            // check if user exist
+            const {name, username, password, email} = req.body;
+            // cek apakah user ada di array dataUser
+            if(!dataUser.email.includes(email)){ 
+                return response(400,{},'email tidak terdaftar',res)
+            }
+            // hapus email dari dataUser
+            const index = dataUser.email.indexOf(email);
+            dataUser.email.splice(index,1); 
+            // password
+            const passwordEncripted = await bcrypt.hash(password,15);
+
+            const newUser = new userModel({
+                name,
+                username,
+                password:passwordEncripted,
+                email,
+            })
+            await newUser.save();
+            response(201,newUser,'user berhasil di daftarkan',res)
+        }catch(err){
+            console.log(err.message);
+            response(500,err,'internal server error',res)
+        }
+    },
     login: async (req, res) => {
         try {
             const errors = validationResult(req);
@@ -37,55 +65,7 @@ module.exports = {
             res.status(500).json({ message: 'Internal server error' });
         }
     },
-    register:async (req, res) => {
-        try{
-            // check if user exist
-            const {name, username, password, email} = req.body;
-            const userCek = await userModel.findOne({
-                $or: [{username},{email}],
-            });
-            if(userCek){
-                return response(400, userCek,'user sudah terdaftar',res)
-            }
-            // password
-            const passwordEncripted = await bcrypt.hash(password,15);
 
-            const newUser = new userModel({
-                name,
-                username,
-                password:passwordEncripted,
-                email,
-            })
-            await newUser.save();
-            response(201,newUser,'user berhasil di daftarkan',res)
-        }catch(err){
-            console.log(err.message);
-            response(500,err,'internal server error',res)
-        }
-    },
-    // login: async (req, res) => {
-    //     try{
-    //         const {username, password} = req.body;
-    //         const secret_key = process.env.secret_key;
-
-    //         const user = await userModel.findOne({username});
-    //         // mengecek apakah username valid
-    //         if(!user){
-    //             return response(400,user,'user tidak ditemukan',res)
-    //         }
-    //         // mengecek apakah password valid
-    //         const validPassword = await bcrypt.compare(password, user.password);
-    //         if(!validPassword){
-    //             return response(400,validPassword,'password salah',res)
-    //         }
-    //         // membuat token
-    //         const token = jwt.sign({id:user._id,jabatan:user.jabatan},secret_key,{expiresIn:'1d'});
-    //         response(200,{token},'login berhasil',res)
-    //     }catch(err){
-    //         console.log(err.message);
-    //         response(500,err,'internal server error',res)
-    //     }
-    // },
     logout: async (req, res) => {
         try {
             const token = req.params.token;
