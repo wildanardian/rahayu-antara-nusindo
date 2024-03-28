@@ -6,36 +6,37 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const response = require("../respons/response_valid");
 const dataUser = require("../utils/userdata");
-const { use } = require("../routers/user");
 
 module.exports = {
     register:async (req, res) => {
         try{
-            // check if user exist
-            const {name, username, password, email} = req.body;
-            // cek apakah user ada di array dataUser
+           
+            const { username, password, email} = req.body;
+           
             if(!dataUser.email.includes(email)){ 
                 return response(400,{},'email tidak terdaftar',res)
             }
-            // hapus email dari dataUser
-            const index = dataUser.email.indexOf(email);
-            dataUser.email.splice(index,1); 
-            // password
+            const userExist = await userModel.findOne ({email});   
+            if(userExist){
+                return response(400,{},'email sudah terdaftar',res)
+            } 
             const passwordEncripted = await bcrypt.hash(password,15);
-
             const newUser = new userModel({
-                name,
                 username,
                 password:passwordEncripted,
                 email,
             })
             await newUser.save();
-            response(201,newUser,'user berhasil di daftarkan',res)
+            return response(201,newUser,'user berhasil di daftarkan',res)
         }catch(err){
+            if (err.code === 11000) {
+                return response(400,{},'email sudah terdaftar',res)
+            }
             console.log(err.message);
-            response(500,err,'internal server error',res)
+            return response(500,err,'internal server error',res)
         }
     },
+
     login: async (req, res) => {
         try {
             const errors = validationResult(req);
