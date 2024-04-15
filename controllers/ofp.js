@@ -19,12 +19,39 @@ module.exports = {
     getSingle: async (req, res) => {
         try {
             const id = req.params._id;
-            const content = await ofpModel.findById(id);
+            const content = await ofpModel.findById(id).populate('kategori');
+            
             response(200, content, 'menampilkan ofp', res)
         } catch (err) {
             response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
         }
     },
+
+    // controller get last add product and last update product
+    getLatest: async (req, res) => {
+        try {
+            const lastUpdate = await ofpModel.findOne().sort({ updatedAt: -1 });
+            const lastAdd = await ofpModel.findOne().sort({ createdAt: -1 });
+            // ambil data updatedAt dan createdAt dari lastUpdate dan lastAdd
+            const result = {
+                lastUpdate: {
+                    title: lastUpdate.title,
+                    updatedAt: lastUpdate.updatedAt
+                },
+                lastAdd: {
+                    title: lastAdd.title,
+                    createdAt: lastAdd.createdAt
+                }
+            }
+            response(200, result, 'menampilkan ofp', res)
+        } catch (err) {
+            response(500, err, 'Internal server error \n Gagal menampilkan ofp', res)
+        }
+    },
+
+
+
+
     // getSelected:async (req, res) => { // v2 
     //     try {
     //         const content = await ofpModel.find({selected: true});
