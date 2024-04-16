@@ -8,35 +8,35 @@ const response = require("../respons/response_valid");
 const dataUser = require("../utils/userdata");
 
 module.exports = {
-    register:async (req, res) => {
-        try{
-           
-            const { username, password, email} = req.body;
-           
-            if(!dataUser.email.includes(email)){ 
-                return response(400,{},'email tidak terdaftar',res)
+    register: async (req, res) => {
+        try {
+            const { username, password, email } = req.body;      
+            if (!dataUser || !dataUser.email.includes(email)) {
+                return res.status(400).json({ message: 'Email tidak terdaftar' });
             }
-            const userExist = await userModel.findOne ({email});   
-            if(userExist){
-                return response(400,{},'email sudah terdaftar',res)
-            } 
-            const passwordEncripted = await bcrypt.hash(password,15);
+    
+            const userExist = await userModel.findOne({ email });
+            if (userExist) {
+                return res.status(400).json({ message: 'Email sudah terdaftar' });
+            }
+    
+            const passwordEncrypted = await bcrypt.hash(password, 15);
             const newUser = new userModel({
                 username,
-                password:passwordEncripted,
+                password: passwordEncrypted,
                 email,
-            })
+            });
             await newUser.save();
-            return response(201,newUser,'user berhasil di daftarkan',res)
-        }catch(err){
+            return res.status(201).json({ message: 'User berhasil didaftarkan', data: newUser });
+        } catch (err) {
             if (err.code === 11000) {
-                return response(400,{},'email sudah terdaftar',res)
+                return res.status(400).json({ message: 'Email sudah terdaftar' });
             }
-            console.log(err.message);
-            return response(500,err,'internal server error',res)
+            console.error(err.message);
+            return res.status(500).json({ message: 'Internal server error' });
         }
     },
-
+    
     login: async (req, res) => {
         try {
             const errors = validationResult(req);
