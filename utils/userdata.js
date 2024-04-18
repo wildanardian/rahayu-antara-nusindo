@@ -6,7 +6,7 @@ const userData = {
         'ex_email_tree@gmail.com',
         'ex_email_four@gmial.com',
         'ex_email_five@gmail.com'
-    ]
+    ]   
 }
 
 module.exports = userData;
