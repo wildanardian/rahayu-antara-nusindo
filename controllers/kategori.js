@@ -1,5 +1,6 @@
 const kategoriSchema = require('../models/kategori');
 const response = require('../respons/response_valid');
+const { getLatest } = require('./ofp');
 
 
 module.exports = {
@@ -25,6 +26,27 @@ module.exports = {
         }catch(error){
             console.log(error);
             response(500,error,'internal server error \n gagal menambahkan kategori', res)
+        }
+    },
+
+    getLatest: async (req, res) => {
+        try{
+            const lastUpdate = await kategoriSchema.findOne().sort({updatedAt: -1});
+            const lastAdd = await kategoriSchema.findOne().sort({createdAt: -1});
+            const result = {
+                lastUpdate: {
+                    nama: lastUpdate.nama,
+                    updatedAt: lastUpdate.updatedAt
+                },
+                lastAdd: {
+                    nama: lastAdd.nama,
+                    createdAt: lastAdd.createdAt
+                }
+            }
+            response(200,result,'menampilkan kategori', res)
+        }catch(error){
+            console.log(error);
+            response(500,error,'internal server error \n gagal menampilkan kategori', res)
         }
     },
     put:async(req,res) =>{

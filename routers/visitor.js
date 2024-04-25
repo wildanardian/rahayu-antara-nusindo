@@ -1,10 +1,9 @@
 const express = require('express');
-const visitor = require('../controllers/visitor');
-// const { router } = require('json-server');
+const visitorController = require('../controllers/visitor');
 
-const Router = express.Router();
+const router = express.Router();
 
-Router.get('/visitor-get', visitor.getPengunjung); // http://localhost:3700/visit/visitor-get
-Router.post('/visitor-count',visitor.hitungPengunjung); // http://localhost:3700/visit/visitor-count
+router.get('/visitor-get', visitorController.getPengunjung);
+router.post('/visitor-count', visitorController.hitungPengunjung);
 
-module.exports = Router;
+module.exports = router;

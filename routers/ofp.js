@@ -4,6 +4,7 @@ const router = express.Router();
 const ofpController = require('../controllers/ofp');
 
 router.get('/', ofpController.get); // http://localhost:3700/ofp
+router.get('/latest',ofpController.getLatest) // http://localhost:3700/ofp/latest
 router.get('/:_id', ofpController.getSingle); // http://localhost:3700/ofp/:_id
 router.post('/', ofpController.post); // http://localhost:3700/ofp
 router.put('/:_id', ofpController.put); // http://localhost:3700/ofp/:_id

@@ -2,6 +2,7 @@ const bannerSchema = require('../models/banner')
 const response = require('../respons/response_valid');
 const multer = require('multer');
 const upload = require('../middleware/filepath');
+const { getLeatest } = require('./ofp');
 
 module.exports = {
     get:async (req,res) =>{
@@ -12,6 +13,27 @@ module.exports = {
         }catch(error){
             console.log(error);
             response(500,error,'internal server error \n gagal menampilakn banner ', res)
+        }
+    },
+
+    getLeatest: async (req, res) => {
+        try{
+            const lastUpdate = await bannerSchema.findOne().sort({updatedAt: -1});
+            const lastAdd = await bannerSchema.findOne().sort({createdAt: -1});
+            const result = {
+                lastUpdate: {
+                    nama: lastUpdate.nama,
+                    updatedAt: lastUpdate.updatedAt
+                },
+                lastAdd: {
+                    nama: lastAdd.nama,
+                    createdAt: lastAdd.createdAt
+                }
+            }
+            response(200,result,'menampilkan banner', res)
+        }catch(error){
+            console.log(error);
+            response(500,error,'internal server error \n gagal menampilkan banner', res)
         }
     },
     post:async(req,res) =>{

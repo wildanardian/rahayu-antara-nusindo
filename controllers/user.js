@@ -3,58 +3,40 @@ const userModel = require("../models/user");
 const bcrypt = require("bcrypt");
 const { validationResult } = require('express-validator'); // npm install express-validator
 const jwt = require("jsonwebtoken");
-const response = require("../respons/response_valid")
+require("dotenv").config();
+const response = require("../respons/response_valid");
+const dataUser = require("../utils/userdata");
 
 module.exports = {
-    register:async (req, res) => {
-        try{
-            // check if user exist
-            const {name, username, password, email} = req.body;
-            const userCek = await userModel.findOne({
-                $or: [{username},{email}],
-            });
-            if(userCek){
-                return response(400, userCek,'user sudah terdaftar',res)
+    register: async (req, res) => {
+        try {
+            const { username, password, email } = req.body;      
+            if (!dataUser || !dataUser.email.includes(email)) {
+                return res.status(400).json({ message: 'Email tidak terdaftar' });
             }
-            // password
-            const passwordEncripted = await bcrypt.hash(password,15);
-
+    
+            const userExist = await userModel.findOne({ email });
+            if (userExist) {
+                return res.status(400).json({ message: 'Email sudah terdaftar' });
+            }
+    
+            const passwordEncrypted = await bcrypt.hash(password, 15);
             const newUser = new userModel({
-                name,
                 username,
-                password:passwordEncripted,
+                password: passwordEncrypted,
                 email,
-            })
+            });
             await newUser.save();
-            response(201,newUser,'user berhasil di daftarkan',res)
-        }catch(err){
-            console.log(err.message);
-            response(500,err,'internal server error',res)
+            return res.status(201).json({ message: 'User berhasil didaftarkan', data: newUser });
+        } catch (err) {
+            if (err.code === 11000) {
+                return res.status(400).json({ message: 'Email sudah terdaftar' });
+            }
+            console.error(err.message);
+            return res.status(500).json({ message: 'Internal server error' });
         }
     },
-    // login: async (req, res) => {
-    //     try{
-    //         const {username, password} = req.body;
-    //         const secret_key = process.env.secret_key;
-
-    //         const user = await userModel.findOne({username});
-    //         // mengecek apakah username valid
-    //         if(!user){
-    //             return response(400,user,'user tidak ditemukan',res)
-    //         }
-    //         // mengecek apakah password valid
-    //         const validPassword = await bcrypt.compare(password, user.password);
-    //         if(!validPassword){
-    //             return response(400,validPassword,'password salah',res)
-    //         }
-    //         // membuat token
-    //         const token = jwt.sign({id:user._id,jabatan:user.jabatan},secret_key,{expiresIn:'1d'});
-    //         response(200,{token},'login berhasil',res)
-    //     }catch(err){
-    //         console.log(err.message);
-    //         response(500,err,'internal server error',res)
-    //     }
-    // },
+    
     login: async (req, res) => {
         try {
             const errors = validationResult(req);
@@ -65,7 +47,7 @@ module.exports = {
             const { username, password } = req.body;
             const secret_key = process.env.secret_key;
     
-            const user = await userModel.findOne({ username });
+            const user = await userModel.findOne({ username }).select('-token');
             if (!user) {
                 return res.status(400).json({ message: 'User tidak ditemukan' });
             }
@@ -74,9 +56,28 @@ module.exports = {
             if (!validPassword) {
                 return res.status(400).json({ message: 'Password salah' });
             }
-    
-            const token = jwt.sign({ id: user._id, jabatan: user.jabatan }, secret_key, { expiresIn: '1d' });
-            res.status(200).json({ token, message: 'Login berhasil' });
+            // username
+            const token = jwt.sign({ id: user._id, username: user.username},secret_key, { expiresIn: '1d' }) 
+            user.token = token;
+            await user.save();
+            return (res.status(200).json({ token, message: 'Login berhasil' }));
+        } catch (err) {
+            console.error(err.message);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    },
+
+    logout: async (req, res) => {
+        try {
+            const token = req.params.token;
+            const user = await userModel.findOne({ token });      
+            console.log(user)
+            if (!user) {
+                return res.status(400).json({ message: 'User tidak ditemukan' });
+            }
+            user.token = null;
+            user.save();    
+            return res.status(200).json({ message: 'Logout berhasil' });        
         } catch (err) {
             console.error(err.message);
             res.status(500).json({ message: 'Internal server error' });
